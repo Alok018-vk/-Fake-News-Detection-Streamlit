@@ -1,4 +1,6 @@
-﻿import os
+﻿
+import os
+import re
 import requests
 from dotenv import load_dotenv
 
@@ -13,11 +15,16 @@ def fact_check_news(news):
     if not api_key:
         return {"error": "Google API key not found.", "results": []}
 
+    # Clean the search text
+    query = re.sub(r"https?://\S+", "", news)
+    query = re.sub(r"\s+", " ", query).strip()
+    query = query[:300]
+
     try:
         response = requests.get(
             API_URL,
             params={
-                "query": news[:500],
+                "query": query,
                 "languageCode": "en",
                 "pageSize": 5,
                 "key": api_key
